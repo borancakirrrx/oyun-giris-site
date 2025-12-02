@@ -5,35 +5,113 @@
     <title>Oyun Giriş</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-      body { font-family: system-ui, sans-serif; display: grid; place-items: center; min-height: 100vh; background: #10151a; color: #e9eef5; margin: 0; }
-      .card { width: 95%; max-width: 420px; background: #141a21; padding: 24px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
-      h1 { font-size: 1.4rem; margin-bottom: 12px; }
-      p { color: #b2bdcd; margin: 0 0 16px; }
-      label { display: block; margin: 12px 0 6px; font-weight: 600; }
-      input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2a3543; background: #0f1318; color: #e9eef5; }
-      input::placeholder { color: #8b98a9; }
-      button { margin-top: 16px; width: 100%; padding: 12px; border-radius: 8px; border: none; background: #3b82f6; color: white; font-weight: 700; cursor: pointer; }
-      button:hover { background: #2563eb; }
-      .msg { margin-top: 12px; min-height: 24px; }
-      .ok { color: #34d399; }
-      .err { color: #f87171; }
-      footer { margin-top: 16px; text-align: center; color: #8b98a9; font-size: 0.9rem; }
+      /* Arka plan */
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      /* Kart */
+      .login-box {
+        background: #ffffff;
+        width: 360px;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      }
+
+      .login-box h1 {
+        margin: 0 0 20px;
+        font-size: 1.6rem;
+        text-align: center;
+        color: #0f172a;
+      }
+
+      /* Input alanları */
+      .input-group {
+        margin-bottom: 20px;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #334155;
+      }
+
+      .input-group input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+      }
+
+      .input-group input:focus {
+        border-color: #3b82f6;
+        outline: none;
+      }
+
+      /* Buton */
+      button {
+        width: 100%;
+        padding: 12px;
+        background: #3b82f6;
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      button:hover {
+        background: #2563eb;
+      }
+
+      /* Mesaj */
+      .msg {
+        margin-top: 16px;
+        text-align: center;
+        font-size: 0.95rem;
+      }
+      .ok { color: #16a34a; }
+      .err { color: #dc2626; }
+
+      /* Footer */
+      footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 0.85rem;
+        color: #64748b;
+      }
     </style>
   </head>
   <body>
-    <div class="card">
+    <div class="login-box">
       <h1>Oyuna Giriş</h1>
-      <p>UID ve Level bilgini gir. Level harf ve özel karakter içerebilir (örnek: A52gg!).</p>
 
-      <label for="uid">UID</label>
-      <input id="uid" type="text" placeholder="Örn: 123456" maxlength="200" />
+      <div class="input-group">
+        <label for="uid">UID</label>
+        <input id="uid" type="text" placeholder="Örn: 123456" maxlength="200" />
+      </div>
 
-      <label for="level">Level</label>
-      <input id="level" type="text" placeholder="Örn: A52gg!" maxlength="200" />
+      <div class="input-group">
+        <label for="level">Level</label>
+        <input id="level" type="text" placeholder="Örn: A52gg!" maxlength="200" />
+      </div>
 
-      <button id="submitBtn">Gönder</button>
+      <button id="submitBtn">Giriş Yap</button>
       <div id="msg" class="msg"></div>
-      <footer>Bilgiler sunucuya iletilir ve metin dosyasına eklenir.</footer>
+
+      <footer>Bilgiler güvenli şekilde kaydedilir.</footer>
     </div>
 
     <script>
