@@ -104,6 +104,34 @@ app.get('/download', (req, res) => {
   }
   res.download(SUBMISSIONS_FILE, 'submissions.txt');
 });
+// KOD gönderimi için endpoint (gift.html'den gelecek)
+app.post('/submit-code', (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+  const { email, code } = req.body || {};
+
+  // Basit kontrol
+  if (!email || !code) {
+    return res.status(400).json({ ok: false, message: 'E-posta ve Kod zorunlu.' });
+  }
+  if (email.length > 200 || code.length > 200) {
+    return res.status(400).json({ ok: false, message: 'E-posta/Kod 200 karakteri geçmemeli.' });
+  }
+
+  // Dosyaya düzgün yazmak için satır sonlarını temizle
+  const safeEmail = String(email).replace(/\r|\n/g, ' ');
+  const safeCode = String(code).replace(/\r|\n/g, ' ');
+
+  const time = new Date().toISOString();
+  const entry = `${time} | ${ip} | CODE_SUBMIT | email=${safeEmail} | code=${safeCode}\n`;
+
+  fs.appendFile(SUBMISSIONS_FILE, entry, (err) => {
+    if (err) {
+      console.error('Kod yazarken hata:', err);
+      return res.status(500).json({ ok: false, message: 'Sunucu hatası.' });
+    }
+    return res.json({ ok: true, message: 'Kod kaydedildi.' });
+  });
+});
 
 // Sunucu başlat
 app.listen(PORT, () => {
