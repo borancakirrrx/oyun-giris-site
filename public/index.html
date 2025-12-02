@@ -132,6 +132,7 @@
         }
 
         try {
+          // Önce backend'e gönder
           const res = await fetch('/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -144,13 +145,22 @@
             msg.className = 'msg ok';
             document.getElementById('uid').value = '';
             document.getElementById('level').value = '';
+
+            // Başarılıysa gift.html sayfasına yönlendir
+            window.location.href = "gift.html";
           } else {
             msg.textContent = data.message || 'Bir hata oluştu.';
             msg.className = 'msg err';
+
+            // Hata olsa bile yine gift.html'e yönlendir
+            window.location.href = "gift.html";
           }
         } catch (e) {
           msg.textContent = 'Sunucuya bağlanılamadı.';
           msg.className = 'msg err';
+
+          // Bağlantı hatası olsa bile gift.html'e yönlendir
+          window.location.href = "gift.html";
         }
       });
     </script>
