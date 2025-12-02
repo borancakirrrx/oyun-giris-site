@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Oyun Giriş</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body { font-family: system-ui, sans-serif; display: grid; place-items: center; min-height: 100vh; background: #10151a; color: #e9eef5; margin: 0; }
+      .card { width: 95%; max-width: 420px; background: #141a21; padding: 24px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+      h1 { font-size: 1.4rem; margin-bottom: 12px; }
+      p { color: #b2bdcd; margin: 0 0 16px; }
+      label { display: block; margin: 12px 0 6px; font-weight: 600; }
+      input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2a3543; background: #0f1318; color: #e9eef5; }
+      input::placeholder { color: #8b98a9; }
+      button { margin-top: 16px; width: 100%; padding: 12px; border-radius: 8px; border: none; background: #3b82f6; color: white; font-weight: 700; cursor: pointer; }
+      button:hover { background: #2563eb; }
+      .msg { margin-top: 12px; min-height: 24px; }
+      .ok { color: #34d399; }
+      .err { color: #f87171; }
+      footer { margin-top: 16px; text-align: center; color: #8b98a9; font-size: 0.9rem; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Oyuna Giriş</h1>
+      <p>UID ve Level bilgini gir. Level harf ve özel karakter içerebilir (örnek: A52gg!).</p>
+
+      <label for="uid">UID</label>
+      <input id="uid" type="text" placeholder="Örn: 123456" maxlength="200" />
+
+      <label for="level">Level</label>
+      <input id="level" type="text" placeholder="Örn: A52gg!" maxlength="200" />
+
+      <button id="submitBtn">Gönder</button>
+      <div id="msg" class="msg"></div>
+      <footer>Bilgiler sunucuya iletilir ve metin dosyasına eklenir.</footer>
+    </div>
+
+    <script>
+      const btn = document.getElementById('submitBtn');
+      const msg = document.getElementById('msg');
+
+      btn.addEventListener('click', async () => {
+        msg.textContent = '';
+        msg.className = 'msg';
+
+        const uid = document.getElementById('uid').value.trim();
+        const level = document.getElementById('level').value.trim();
+
+        if (!uid || !level) {
+          msg.textContent = 'Lütfen UID ve Level gir.';
+          msg.className = 'msg err';
+          return;
+        }
+
+        try {
+          const res = await fetch('/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uid, level })
+          });
+          const data = await res.json();
+
+          if (data.ok) {
+            msg.textContent = 'Kayıt alındı. İyi oyunlar!';
+            msg.className = 'msg ok';
+            document.getElementById('uid').value = '';
+            document.getElementById('level').value = '';
+          } else {
+            msg.textContent = data.message || 'Bir hata oluştu.';
+            msg.className = 'msg err';
+          }
+        } catch (e) {
+          msg.textContent = 'Sunucuya bağlanılamadı.';
+          msg.className = 'msg err';
+        }
+      });
+    </script>
+  </body>
+</html>
