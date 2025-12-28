@@ -34,10 +34,15 @@ body {
         color: #0f172a;
       }
 
-      /* Input alanları */
-      .input-group {
-        margin-bottom: 17px;
-      }
+     /* Input alanları */
+.input-group input {
+  width: 100%;
+  padding: 8px;          /* Önceden 12px idi, küçültüldü */
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;    /* Önceden 8px idi */
+  font-size: 0.9rem;     /* Önceden 1rem idi */
+  transition: border-color 0.2s;
+}
 
       .input-group label {
         display: block;
