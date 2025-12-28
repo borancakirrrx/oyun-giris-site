@@ -105,21 +105,25 @@
         color: #64748b;
       }
 
-      /* Yan resim */
-      .side-image {
-        width: 140px;
-        height: 140px;
-        background: url('orj.png') no-repeat center/cover;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      }
+    /* Yan resim */
+.side-image {
+  width: 140px;
+  height: 140px;
+  background: url('orj.png') no-repeat center;
+  background-size: cover;   /* Resmi otomatik ölçeklendirip kutuya tam oturtur */
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 
-      /* Mobil uyum */
-      @media (max-width: 600px) {
-        .container {
-          flex-direction: column;
-          gap: 12px;
-        }
+}
+
+
+    @media (max-width: 600px) {
+  .side-image {
+    width: 100%;
+    height: 180px;
+    background-size: cover;  /* Mobilde de otomatik ölçeklenir */
+  }
+
         .side-image {
           width: 100%;
           height: 180px;
