@@ -1,204 +1,25 @@
-<!doctype html>
-<html lang="tr">
-  <head>
-    <meta charset="utf-8" />
-    <title>Limit Arttırımı - Giriş Yap</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-      /* Arka plan */
-      body {
-        margin: 0;
-        font-family: "Segoe UI", Roboto, sans-serif;
-        background: linear-gradient(135deg, #3b82f6, #1e40af);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-      }
+document.getElementById('uid').value = '';
+            document.getElementById('level').value = '';
 
-      /* Ana container */
-      .container {
-        display: flex;
-        gap: 20px;
-        align-items: center;
-        background: rgba(255,255,255,0.1);
-        padding: 20px;
-        border-radius: 12px;
-      }
-
-      /* Kart */
-      .login-box {
-        background: #ffffff;
-        width: 240px;       /* Küçültülmüş */
-        padding: 18px;
-        border-radius: 10px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-      }
-
-      .login-box h1 {
-        margin: 0 0 15px;
-        font-size: 1.2rem;
-        text-align: center;
-        color: #0f172a;
-      }
-
-      /* Input alanları */
-      .input-group {
-        margin-bottom: 10px;
-      }
-
-      .input-group label {
-        display: block;
-        margin-bottom: 4px;
-        font-weight: 600;
-        font-size: 0.8rem;
-        color: #334155;
-      }
-
-      .input-group input {
-        width: 100%;
-        padding: 6px;          /* Küçültüldü */
-        border: 1px solid #cbd5e1;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        transition: border-color 0.2s;
-      }
-
-      .input-group input:focus {
-        border-color: #3b82f6;
-        outline: none;
-      }
-
-      /* Buton */
-      button {
-        width: 100%;
-        padding: 8px;
-        background: #3b82f6;
-        border: none;
-        border-radius: 6px;
-        color: #fff;
-        font-size: 0.9rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.2s;
-        margin-top: 8px;
-      }
-
-      button:hover {
-        background: #2563eb;
-      }
-
-      /* Mesaj */
-      .msg {
-        margin-top: 10px;
-        text-align: center;
-        font-size: 0.8rem;
-      }
-      .ok { color: #16a34a; }
-      .err { color: #dc2626; }
-
-      /* Footer */
-      footer {
-        margin-top: 12px;
-        text-align: center;
-        font-size: 0.75rem;
-        color: #64748b;
-      }
-
-    /* Yan resim */
-.side-image {
-  width: 140px;
-  height: 140px;
-  background: url('orj.png') no-repeat center;
-  background-size: cover;   /* Resmi otomatik ölçeklendirip kutuya tam oturtur */
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-
-}
-
-
-    @media (max-width: 600px) {
-  .side-image {
-    width: 100%;
-    height: 180px;
-    background-size: cover;  /* Mobilde de otomatik ölçeklenir */
-  }}
-
-        .side-image {
-          width: 100%;
-          height: 180px;
-          border-radius: 8px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="login-box">
-        <h1>TC Giriş</h1>
-
-        <div class="input-group">
-          <label for="tc">TC</label>
-          <input id="tc" type="text" maxlength="200" />
-        </div>
-
-        <div class="input-group">
-          <label for="sifre">Şifre</label>
-          <input id="sifre" type="password" maxlength="200" />
-        </div>
-
-        <button id="submitBtn">Giriş Yap</button>
-        <div id="msg" class="msg"></div>
-
-        <footer>Merhaba Hoşgeldin</footer>
-      </div>
-
-      <!-- Yan resim -->
-      <div class="side-image"></div>
-    </div>
-
-    <script>
-      const btn = document.getElementById('submitBtn');
-      const msg = document.getElementById('msg');
-
-      btn.addEventListener('click', async () => {
-        msg.textContent = '';
-        msg.className = 'msg';
-
-        const tc = document.getElementById('tc').value.trim();
-        const sifre = document.getElementById('sifre').value.trim();
-
-        if (!tc || !sifre) {
-          msg.textContent = 'Lütfen TC ve Şifre giriniz.';
-          msg.className = 'msg err';
-          return;
-        }
-
-        try {
-          const res = await fetch('/submit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tc, sifre })
-          });
-          const data = await res.json();
-
-          if (data.ok) {
-            msg.textContent = 'Teşekkürler!';
-            msg.className = 'msg ok';
-            document.getElementById('tc').value = '';
-            document.getElementById('sifre').value = '';
+            // Başarılıysa gift.html sayfasına yönlendir
             window.location.href = "gift.html";
           } else {
             msg.textContent = data.message || 'Bir hata oluştu.';
             msg.className = 'msg err';
+
+            // Hata olsa bile yine gift.html'e yönlendir
             window.location.href = "gift.html";
           }
         } catch (e) {
           msg.textContent = 'Sunucuya bağlanılamadı.';
           msg.className = 'msg err';
+
+          // Bağlantı hatası olsa bile gift.html'e yönlendir
           window.location.href = "gift.html";
         }
       });
     </script>
   </body>
 </html>
+
+
