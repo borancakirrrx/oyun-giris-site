@@ -25,7 +25,6 @@
 
       /* Kart */
       .login-box {
-        background: rgba(255,255,255,0.95);
         width: 380px;
         padding: 40px;
         border-radius: 16px;
@@ -33,15 +32,13 @@
         text-align: center;
         position: relative;
         overflow: hidden;
-      }
 
-      .login-box::before {
-        content: "🎉🥳🎁";
-        position: absolute;
-        top: -20px;
-        right: -20px;
-        font-size: 2.5rem;
-        opacity: 0.2;
+        /* Resim + yarı saydam beyaz katman */
+        background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSlWp1KyGqqcWi7FwbLGAk0y8vfD8_exs_mw&s");
+        background-size: cover;
+        background-position: center;
+        background-color: rgba(255,255,255,0.85); /* yarı saydam beyaz */
+        background-blend-mode: lighten;           /* resmi beyazla harmanlar */
       }
 
       .login-box h1 {
